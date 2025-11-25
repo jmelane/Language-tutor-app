@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Language Learning Tutor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+            height: calc(100vh - 40px);
+        }
+
+        .main-panel {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .side-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .language-selector {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .language-selector select {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .proficiency-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: rgba(255,255,255,0.2);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .message.tutor .message-avatar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message.user .message-avatar {
+            background: #e0e7ff;
+            color: #667eea;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            line-height: 1.5;
+        }
+
+        .message.tutor .message-content {
+            background: #f3f4f6;
+            border-bottom-left-radius: 4px;
+        }
+
+        .message.user .message-content {
+            background: #667eea;
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .input-container {
+            padding: 20px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 12px;
+        }
+
+        .input-container input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .input-container input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .input-container button {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .input-container button:hover {
+            transform: translateY(-2px);
+        }
+
+        .input-container button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .panel h2 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feedback-item {
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            border-left: 4px solid #667eea;
+            animation: slideIn 0.3s ease;
+        }
+
+        .feedback-item.positive {
+            border-left-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .feedback-item.correction {
+            border-left-color: #f59e0b;
+            background: #fffbeb;
+        }
+
+        .feedback-item .feedback-type {
+            font-size: 12px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 4px;
+        }
+
+        .feedback-item.positive .feedback-type {
+            color: #10b981;
+        }
+
+        .feedback-item.correction .feedback-type {
+            color: #f59e0b;
+        }
+
+        .feedback-item .feedback-text {
+            font-size: 14px;
+            color: #4b5563;
+        }
+
+        .goal-item {
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .goal-text {
+            font-size: 14px;
+            color: #4b5563;
+            flex: 1;
+        }
+
+        .goal-progress {
+            width: 60px;
+            height: 6px;
+            background: #e5e7eb;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-left: 12px;
+        }
+
+        .goal-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+
+        .add-goal-btn {
+            width: 100%;
+            padding: 10px;
+            background: #f3f4f6;
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            color: #6b7280;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .add-goal-btn:hover {
+            background: #e5e7eb;
+            border-color: #9ca3af;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .stat-card {
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            color: white;
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        .progress-bar-container {
+            margin-bottom: 16px;
+        }
+
+        .progress-bar-label {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.5s ease;
+        }
+
+        .gamification-panel {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .points-display {
+            text-align: center;
+            padding: 20px;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 12px;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .points-value {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .points-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .badge {
+            padding: 16px;
+            background: #f9fafb;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .badge.earned {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .badge-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .badge-name {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-description {
+            font-size: 10px;
+            opacity: 0.7;
+            margin-top: 4px;
+        }
+
+        .leaderboard {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .leaderboard-item.current-user {
+            background: #e0e7ff;
+            border: 2px solid #667eea;
+        }
+
+        .leaderboard-rank {
+            font-size: 18px;
+            font-weight: 700;
+            color: #667eea;
+            width: 30px;
+        }
+
+        .leaderboard-name {
+            flex: 1;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .leaderboard-points {
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .mode-toggle {
+            display: flex;
+            gap: 8px;
+            padding: 4px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+        }
+
+        .mode-btn {
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            color: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background 0.3s;
+        }
+
+        .mode-btn.active {
+            background: rgba(255,255,255,0.3);
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #9ca3af;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .loading {
+            display: flex;
+            gap: 4px;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .loading-dot {
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+
+        .loading-dot:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dot:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideInRight 0.3s ease;
+            z-index: 1000;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification-icon {
+            font-size: 24px;
+        }
+
+        .notification-text {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .main-panel {
+                height: 60vh;
+            }
+
+            .side-panel {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .message-content {
+                max-width: 85%;
+            }
+        }
+
+        .scroll-to-bottom {
+            position: absolute;
+            bottom: 90px;
+            right: 30px;
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: transform 0.2s;
+        }
+
+        .scroll-to-bottom:hover {
+            transform: scale(1.1);
+        }
+
+        .scroll-to-bottom.show {
+            display: flex;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="main-panel">
+            <div class="header">
+                <div>
+                    <h1>🌍 Language Learning Tutor</h1>
+                </div>
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <div class="language-selector">
+                        <select id="languageSelect">
+                            <option value="es">🇪🇸 Spanish</option>
+                            <option value="fr">🇫🇷 French</option>
+                            <option value="de">🇩🇪 German</option>
+                            <option value="ja">🇯🇵 Japanese</option>
+                            <option value="it">🇮🇹 Italian</option>
+                            <option value="pt">🇵🇹 Portuguese</option>
+                            <option value="zh">🇨🇳 Chinese</option>
+                            <option value="ko">🇰🇷 Korean</option>
+                        </select>
+                    </div>
+                    <div class="proficiency-badge" id="proficiencyBadge">Beginner</div>
+                    <div class="mode-toggle">
+                        <button class="mode-btn active" data-mode="chat">💬 Chat</button>
+                        <button class="mode-btn" data-mode="lesson">📚 Lesson</button>
+                    </div>
+                </div>
+            </div>
+            <div class="chat-container" id="chatContainer">
+                <div class="empty-state">
+                    <div class="empty-state-icon">💬</div>
+                    <p>Start a conversation to begin learning!</p>
+                </div>
+            </div>
+            <button class="scroll-to-bottom" id="scrollToBottom">↓</button>
+            <div class="input-container">
+                <input 
+                    type="text" 
+                    id="messageInput" 
+                    placeholder="Type your message in the selected language..."
+                    autocomplete="off"
+                />
+                <button id="sendButton">Send</button>
+            </div>
+        </div>
+
+        <div class="side-panel">
+            <div class="gamification-panel">
+                <h2>🎮 Your Progress</h2>
+                <div class="points-display">
+                    <div class="points-value" id="totalPoints">0</div>
+                    <div class="points-label">Total Points</div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="messagesCount">0</div>
+                        <div class="stat-label">Messages</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="streakCount">0</div>
+                        <div class="stat-label">Day Streak</div>
+                    </div>
+                </div>
+                <h3 style="font-size: 14px; margin-bottom: 12px; color: #1f2937;">🏆 Badges</h3>
+                <div class="badges-grid" id="badgesGrid"></div>
+            </div>
+
+            <div class="panel">
+                <h2>💡 Real-time Feedback</h2>
+                <div id="feedbackContainer" style="max-height: 200px; overflow-y: auto;">
+                    <div class="empty-state" style="padding: 20px;">
+                        <p style="font-size: 14px;">Feedback will appear here as you chat</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>🎯 Learning Goals</h2>
+                <div id="goalsContainer"></div>
+                <button class="add-goal-btn" id="addGoalBtn">+ Add Custom Goal</button>
+            </div>
+
+            <div class="panel">
+                <h2>📊 Progress Tracking</h2>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-label">
+                        <span>Vocabulary</span>
+                        <span id="vocabProgress">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill" id="vocabProgressBar" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-label">
+                        <span>Grammar</span>
+                        <span id="grammarProgress">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill" id="grammarProgressBar" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-label">
+                        <span>Fluency</span>
+                        <span id="fluencyProgress">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill" id="fluencyProgressBar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h2>🏅 Leaderboard</h2>
+                <div class="leaderboard" id="leaderboard"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State Management
+        const state = {
+            language: 'es',
+            mode: 'chat',
+            proficiency: 'beginner',
+            messages: [],
+            feedback: [],
+            goals: [],
+            progress: {
+                vocabulary: 0,
+                grammar: 0,
+                fluency: 0,
+                messages: 0,
+                streak: 0
+            },
+            gamification: {
+                points: 0,
+                badges: [],
+                achievements: []
+            },
+            username: 'You'
+        };
+
+        // Language configurations
+        const languages = {
+            es: { name: 'Spanish', greeting: '¡Hola! Soy tu tutor de español. ¿Cómo puedo ayudarte hoy?' },
+            fr: { name: 'French', greeting: 'Bonjour! Je suis votre tuteur de français. Comment puis-je vous aider aujourd\'hui?' },
+            de: { name: 'German', greeting: 'Hallo! Ich bin dein Deutschlehrer. Wie kann ich dir heute helfen?' },
+            ja: { name: 'Japanese', greeting: 'こんにちは！私はあなたの日本語の先生です。今日はどうお手伝いしましょうか？' },
+            it: { name: 'Italian', greeting: 'Ciao! Sono il tuo tutor di italiano. Come posso aiutarti oggi?' },
+            pt: { name: 'Portuguese', greeting: 'Olá! Sou seu tutor de português. Como posso ajudá-lo hoje?' },
+            zh: { name: 'Chinese', greeting: '你好！我是你的中文老师。今天我能帮你什么？' },
+            ko: { name: 'Korean', greeting: '안녕하세요! 저는 한국어 선생님입니다. 오늘 어떻게 도와드릴까요?' }
+        };
+
+        // Badge definitions
+        const badgeDefinitions = [
+            { id: 'first_message', name: 'First Steps', icon: '👣', description: 'Send first message', requirement: 1, type: 'messages' },
+            { id: 'conversationalist', name: 'Conversationalist', icon: '💬', description: 'Send 10 messages', requirement: 10, type: 'messages' },
+            { id: 'dedicated', name: 'Dedicated', icon: '🔥', description: '3 day streak', requirement: 3, type: 'streak' },
+            { id: 'grammar_guru', name: 'Grammar Guru', icon: '📝', description: '50 points', requirement: 50, type: 'points' },
+            { id: 'polyglot', name: 'Polyglot', icon: '🌍', description: 'Try 3 languages', requirement: 3, type: 'languages' },
+            { id: 'expert', name: 'Language Expert', icon: '🎓', description: '200 points', requirement: 200, type: 'points' },
+            { id: 'master', name: 'Language Master', icon: '👑', description: '500 points', requirement: 500, type: 'points' },
+            { id: 'vocabulary_builder', name: 'Word Wizard', icon: '📚', description: '25 messages', requirement: 25, type: 'messages' }
+        ];
+
+        // DOM Elements
+        const chatContainer = document.getElementById('chatContainer');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const languageSelect = document.getElementById('languageSelect');
+        const proficiencyBadge = document.getElementById('proficiencyBadge');
+        const feedbackContainer = document.getElementById('feedbackContainer');
+        const goalsContainer = document.getElementById('goalsContainer');
+        const addGoalBtn = document.getElementById('addGoalBtn');
+        const totalPointsEl = document.getElementById('totalPoints');
+        const messagesCountEl = document.getElementById('messagesCount');
+        const streakCountEl = document.getElementById('streakCount');
+        const badgesGrid = document.getElementById('badgesGrid');
+        const leaderboard = document.getElementById('leaderboard');
+        const scrollToBottomBtn = document.getElementById('scrollToBottom');
+
+        // Initialize
+        function init() {
+            loadState();
+            renderBadges();
+            renderGoals();
+            renderLeaderboard();
+            updateProgressBars();
+            updateStats();
+            
+            // Add welcome message
+            if (state.messages.length === 0) {
+                addMessage('tutor', languages[state.language].greeting);
+            } else {
+                renderMessages();
+            }
+
+            // Event listeners
+            sendButton.addEventListener('click', sendMessage);
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') sendMessage();
+            });
+            languageSelect.addEventListener('change', changeLanguage);
+            addGoalBtn.addEventListener('click', addCustomGoal);
+            
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    state.mode = btn.dataset.mode;
+                    saveState();
+                });
+            });
+
+            // Scroll detection
+            chatContainer.addEventListener('scroll', () => {
+                const isNearBottom = chatContainer.scrollHeight - chatContainer.scrollTop - chatContainer.clientHeight < 100;
+                scrollToBottomBtn.classList.toggle('show', !isNearBottom && state.messages.length > 0);
+            });
+
+            scrollToBottomBtn.addEventListener('click', () => {
+                chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' });
+            });
+        }
+
+        // Message handling
+        function addMessage(sender, text) {
+            state.messages.push({ sender, text, timestamp: Date.now() });
+            renderMessages();
+            saveState();
+            scrollToBottom();
+
+            if (sender === 'user') {
+                state.progress.messages++;
+                updateStats();
+                analyzeuserMessage(text);
+            }
+        }
+
+        function renderMessages() {
+            const emptyState = chatContainer.querySelector('.empty-state');
+            if (emptyState) emptyState.remove();
+
+            chatContainer.innerHTML = state.messages.map(msg => `
+                <div class="message ${msg.sender}">
+                    <div class="message-avatar">${msg.sender === 'tutor' ? '🤖' : '👤'}</div>
+                    <div class="message-content">${escapeHtml(msg.text)}</div>
+                </div>
+            `).join('');
+        }
+
+        async function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text) return;
+
+            messageInput.value = '';
+            sendButton.disabled = true;
+
+            addMessage('user', text);
+
+            // Award points for sending a message
+            awardPoints(5, 'Message sent!');
+
+            // Show loading
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'loading';
+            loadingDiv.innerHTML = '<div class="loading-dot"></div><div class="loading-dot"></div><div class="loading-dot"></div>';
+            chatContainer.appendChild(loadingDiv);
+            scrollToBottom();
+
+            try {
+                const response = await getTutorResponse(text);
+                loadingDiv.remove();
+                addMessage('tutor', response);
+            } catch (error) {
+                loadingDiv.remove();
+                addMessage('tutor', 'I apologize, but I encountered an error. Please try again.');
+                console.error('Error getting tutor response:', error);
+            }
+
+            sendButton.disabled = false;
+            messageInput.focus();
+        }
+
+        async function getTutorResponse(userMessage) {
+            const languageName = languages[state.language].name;
+            const conversationContext = state.messages.slice(-6).map(m => 
+                `${m.sender === 'user' ? 'Student' : 'Tutor'}: ${m.text}`
+            ).join('\n');
+
+            const goalsText = state.goals.map(g => g.text).join(', ');
+
+            const prompt = `You are a ${languageName} language tutor. The student is at a ${state.proficiency} level.
+${state.mode === 'lesson' ? 'You are in lesson mode - provide structured teaching with explanations.' : 'You are in casual chat mode - have a natural conversation while gently correcting errors.'}
+
+Current learning goals: ${goalsText || 'Not set yet'}
+
+Recent conversation:
+${conversationContext}
+
+Student's latest message: ${userMessage}
+
+Respond naturally in ${languageName}. Keep your response conversational and encouraging. If you notice errors, correct them gently.`;
+
+            try {
+                if (typeof window.claude !== 'undefined' && window.claude.complete) {
+                    const response = await window.claude.complete(prompt);
+                    return response;
+                } else {
+                    // Fallback for demo purposes
+                    return getFallbackResponse(userMessage);
+                }
+            } catch (error) {
+                console.error('Claude API error:', error);
+                return getFallbackResponse(userMessage);
+            }
+        }
+
+        function getFallbackResponse(userMessage) {
+            const responses = {
+                es: [
+                    '¡Muy bien! Tu español está mejorando. ¿Puedes contarme más sobre eso?',
+                    'Interesante. En español, también podríamos decir... ¿Entiendes?',
+                    '¡Excelente práctica! Sigamos conversando para mejorar tu fluidez.',
+                    'Me gusta tu entusiasmo por aprender. ¿Qué más te gustaría practicar?'
+                ],
+                fr: [
+                    'Très bien! Votre français s\'améliore. Pouvez-vous m\'en dire plus?',
+                    'Intéressant. En français, nous pourrions aussi dire... Comprenez-vous?',
+                    'Excellente pratique! Continuons à converser pour améliorer votre aisance.',
+                    'J\'aime votre enthousiasme pour apprendre. Que voudriez-vous pratiquer d\'autre?'
+                ],
+                de: [
+                    'Sehr gut! Dein Deutsch verbessert sich. Kannst du mir mehr darüber erzählen?',
+                    'Interessant. Auf Deutsch könnten wir auch sagen... Verstehst du?',
+                    'Ausgezeichnete Übung! Lass uns weiter sprechen, um deine Geläufigkeit zu verbessern.',
+                    'Mir gefällt deine Begeisterung fürs Lernen. Was möchtest du noch üben?'
+                ]
+            };
+
+            const langResponses = responses[state.language] || responses.es;
+            return langResponses[Math.floor(Math.random() * langResponses.length)];
+        }
+
+        async function analyzeUserMessage(text) {
+            // Simulate feedback analysis
+            const feedbackTypes = [
+                { type: 'positive', text: 'Great use of vocabulary! Keep it up!', chance: 0.3 },
+                { type: 'positive', text: 'Your sentence structure is improving!', chance: 0.3 },
+                { type: 'correction', text: 'Consider using more descriptive adjectives.', chance: 0.2 },
+                { type: 'correction', text: 'Watch your verb conjugation in past tense.', chance: 0.2 },
+                { type: 'info', text: 'Nice conversation flow! Try using more transitional phrases.', chance: 0.3 }
+            ];
+
+            // Add random feedback items
+            feedbackTypes.forEach(feedback => {
+                if (Math.random() < feedback.chance) {
+                    addFeedback(feedback.type, feedback.text);
+                    
+                    if (feedback.type === 'positive') {
+                        awardPoints(10, 'Great language use!');
+                    }
+                }
+            });
+
+            // Update progress
+            state.progress.vocabulary = Math.min(100, state.progress.vocabulary + Math.random() * 2);
+            state.progress.grammar = Math.min(100, state.progress.grammar + Math.random() * 1.5);
+            state.progress.fluency = Math.min(100, state.progress.fluency + Math.random() * 1);
+            
+            updateProgressBars();
+            updateProficiencyLevel();
+            updateGoalsProgress();
+            checkBadges();
+            saveState();
+        }
+
+        function addFeedback(type, text) {
+            state.feedback.unshift({ type, text, timestamp: Date.now() });
+            if (state.feedback.length > 10) state.feedback = state.feedback.slice(0, 10);
+            
+            renderFeedback();
+        }
+
+        function renderFeedback() {
+            if (state.feedback.length === 0) {
+                feedbackContainer.innerHTML = '<div class="empty-state" style="padding: 20px;"><p style="font-size: 14px;">Feedback will appear here as you chat</p></div>';
+                return;
+            }
+
+            feedbackContainer.innerHTML = state.feedback.map(f => `
+                <div class="feedback-item ${f.type}">
+                    <div class="feedback-type">${f.type === 'positive' ? '✓' : f.type === 'correction' ? '⚠' : 'ℹ'} ${f.type.toUpperCase()}</div>
+                    <div class="feedback-text">${escapeHtml(f.text)}</div>
+                </div>
+            `).join('');
+        }
+
+        // Learning goals
+        function initializeGoals() {
+            if (state.goals.length === 0) {
+                const languageName = languages[state.language].name;
+                state.goals = [
+                    { id: Date.now() + 1, text: `Master basic ${languageName} greetings and introductions`, progress: 0 },
+                    { id: Date.now() + 2, text: `Learn 50 common ${languageName} words`, progress: 0 },
+                    { id: Date.now() + 3, text: `Understand present tense verb conjugations`, progress: 0 },
+                    { id: Date.now() + 4, text: `Have a 5-minute conversation`, progress: 0 }
+                ];
+                saveState();
+            }
+        }
+
+        function renderGoals() {
+            initializeGoals();
+            goalsContainer.innerHTML = state.goals.map(goal => `
+                <div class="goal-item">
+                    <div class="goal-text">${escapeHtml(goal.text)}</div>
+                    <div class="goal-progress">
+                        <div class="goal-progress-bar" style="width: ${goal.progress}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addCustomGoal() {
+            const goalText = prompt('Enter your learning goal:');
+            if (goalText && goalText.trim()) {
+                state.goals.push({
+                    id: Date.now(),
+                    text: goalText.trim(),
+                    progress: 0
+                });
+                renderGoals();
+                saveState();
+                showNotification('🎯', 'New goal added!');
+            }
+        }
+
+        function updateGoalsProgress() {
+            state.goals.forEach(goal => {
+                goal.progress = Math.min(100, goal.progress + Math.random() * 5);
+                
+                if (goal.progress >= 100 && goal.progress < 105) {
+                    awardPoints(50, 'Goal completed!');
+                    showNotification('🎉', 'You completed a learning goal!');
+                }
+            });
+            renderGoals();
+        }
+
+        // Gamification
+        function awardPoints(points, reason) {
+            state.gamification.points += points;
+            totalPointsEl.textContent = state.gamification.points;
+            
+            if (reason) {
+                showNotification('⭐', `+${points} points: ${reason}`);
+            }
+            
+            checkBadges();
+            saveState();
+        }
+
+        function checkBadges() {
+            const stats = {
+                messages: state.progress.messages,
+                streak: state.progress.streak,
+                points: state.gamification.points,
+                languages: new Set(state.gamification.achievements.filter(a => a.type === 'language').map(a => a.value)).size
+            };
+
+            badgeDefinitions.forEach(badge => {
+                if (!state.gamification.badges.includes(badge.id)) {
+                    if (stats[badge.type] >= badge.requirement) {
+                        state.gamification.badges.push(badge.id);
+                        showNotification('🏆', `Badge earned: ${badge.name}!`);
+                        awardPoints(25, 'Badge earned!');
+                    }
+                }
+            });
+
+            renderBadges();
+        }
+
+        function renderBadges() {
+            badgesGrid.innerHTML = badgeDefinitions.map(badge => {
+                const earned = state.gamification.badges.includes(badge.id);
+                return `
+                    <div class="badge ${earned ? 'earned' : ''}">
+                        <div class="badge-icon">${earned ? badge.icon : '🔒'}</div>
+                        <div class="badge-name">${badge.name}</div>
+                        <div class="badge-description">${badge.description}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderLeaderboard() {
+            // Sample leaderboard data
+            const leaderboardData = [
+                { name: state.username, points: state.gamification.points, current: true },
+                { name: 'Sarah Chen', points: 1250, current: false },
+                { name: 'Miguel Rodriguez', points: 980, current: false },
+                { name: 'Emma Schmidt', points: 850, current: false },
+                { name: 'Yuki Tanaka', points: 720, current: false }
+            ].sort((a, b) => b.points - a.points);
+
+            leaderboard.innerHTML = leaderboardData.map((user, index) => `
+                <div class="leaderboard-item ${user.current ? 'current-user' : ''}">
+                    <div class="leaderboard-rank">#${index + 1}</div>
+                    <div class="leaderboard-name">${escapeHtml(user.name)}</div>
+                    <div class="leaderboard-points">${user.points} pts</div>
+                </div>
+            `).join('');
+        }
+
+        // Progress tracking
+        function updateProgressBars() {
+            document.getElementById('vocabProgressBar').style.width = state.progress.vocabulary + '%';
+            document.getElementById('vocabProgress').textContent = Math.round(state.progress.vocabulary) + '%';
+            
+            document.getElementById('grammarProgressBar').style.width = state.progress.grammar + '%';
+            document.getElementById('grammarProgress').textContent = Math.round(state.progress.grammar) + '%';
+            
+            document.getElementById('fluencyProgressBar').style.width = state.progress.fluency + '%';
+            document.getElementById('fluencyProgress').textContent = Math.round(state.progress.fluency) + '%';
+        }
+
+        function updateStats() {
+            messagesCountEl.textContent = state.progress.messages;
+            streakCountEl.textContent = state.progress.streak;
+            totalPointsEl.textContent = state.gamification.points;
+        }
+
+        function updateProficiencyLevel() {
+            const avgProgress = (state.progress.vocabulary + state.progress.grammar + state.progress.fluency) / 3;
+            
+            let level = 'Beginner';
+            if (avgProgress >= 80) level = 'Advanced';
+            else if (avgProgress >= 50) level = 'Intermediate';
+            else if (avgProgress >= 25) level = 'Elementary';
+            
+            if (state.proficiency !== level.toLowerCase()) {
+                state.proficiency = level.toLowerCase();
+                proficiencyBadge.textContent = level;
+                showNotification('📈', `Level up! You're now ${level}`);
+                awardPoints(100, 'Level up!');
+            }
+        }
+
+        // Language management
+        function changeLanguage() {
+            const newLang = languageSelect.value;
+            if (newLang !== state.language) {
+                state.language = newLang;
+                
+                // Track language achievement
+                if (!state.gamification.achievements.some(a => a.type === 'language' && a.value === newLang)) {
+                    state.gamification.achievements.push({ type: 'language', value: newLang, timestamp: Date.now() });
+                }
+                
+                // Reset conversation
+                state.messages = [];
+                addMessage('tutor', languages[newLang].greeting);
+                initializeGoals();
+                renderGoals();
+                checkBadges();
+                saveState();
+                
+                showNotification('🌍', `Switched to ${languages[newLang].name}!`);
+            }
+        }
+
+        // Utilities
+        function scrollToBottom() {
+            setTimeout(() => {
+                chatContainer.scrollTo({ top: chatContainer.scrollHeight, behavior: 'smooth' });
+            }, 100);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function showNotification(icon, text) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerHTML = `
+                <div class="notification-icon">${icon}</div>
+                <div class="notification-text">${escapeHtml(text)}</div>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideInRight 0.3s ease reverse';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // State persistence
+        function saveState() {
+            try {
+                localStorage.setItem('languageTutorState', JSON.stringify(state));
+            } catch (e) {
+                console.error('Failed to save state:', e);
+            }
+        }
+
+        function loadState() {
+            try {
+                const saved = localStorage.getItem('languageTutorState');
+                if (saved) {
+                    const loadedState = JSON.parse(saved);
+                    Object.assign(state, loadedState);
+                    
+                    // Update UI
+                    languageSelect.value = state.language;
+                    proficiencyBadge.textContent = state.proficiency.charAt(0).toUpperCase() + state.proficiency.slice(1);
+                    
+                    // Update streak
+                    const lastVisit = localStorage.getItem('lastVisit');
+                    const today = new Date().toDateString();
+                    const yesterday = new Date(Date.now() - 86400000).toDateString();
+                    
+                    if (lastVisit === yesterday) {
+                        state.progress.streak++;
+                    } else if (lastVisit !== today) {
+                        state.progress.streak = 1;
+                    }
+                    
+                    localStorage.setItem('lastVisit', today);
+                }
+            } catch (e) {
+                console.error('Failed to load state:', e);
+            }
+        }
+
+        // Initialize app
+        init();
+    </script>
+</body>
+</html>
