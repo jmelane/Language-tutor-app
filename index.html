@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5" />
     <meta name="theme-color" content="#0f0a1f" media="(prefers-color-scheme: dark)" />
     <meta name="theme-color" content="#7c3aed" media="(prefers-color-scheme: light)" />
     
@@ -18,18 +18,16 @@
     <meta property="og:url" content="https://language-tutor.app/" />
     <meta property="og:title" content="Language Tutor - AI-Powered Language Learning" />
     <meta property="og:description" content="Master any language with personalized AI tutoring. Practice conversations, get instant feedback, and track your progress." />
-    <meta property="og:image" content="%PUBLIC_URL%/og-image.png" />
     
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://language-tutor.app/" />
     <meta property="twitter:title" content="Language Tutor - AI-Powered Language Learning" />
     <meta property="twitter:description" content="Master any language with personalized AI tutoring. Practice conversations, get instant feedback, and track your progress." />
-    <meta property="twitter:image" content="%PUBLIC_URL%/og-image.png" />
     
     <!-- PWA Meta Tags -->
-    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <link rel="apple-touch-icon" href="/logo192.png" />
+    <link rel="manifest" href="/manifest.json" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -39,40 +37,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     
-    <!-- DNS Prefetch for AI APIs -->
-    <link rel="dns-prefetch" href="//api.openai.com" />
-    <link rel="dns-prefetch" href="//api.anthropic.com" />
-    <link rel="dns-prefetch" href="//localhost:11434" />
-    
     <title>Language Tutor - AI-Powered Language Learning</title>
-    
-    <!-- Structured Data -->
-    <script type="application/ld+json">
-      {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "Language Tutor",
-        "description": "AI-powered language learning assistant for practicing conversations and mastering new languages",
-        "applicationCategory": "EducationalApplication",
-        "operatingSystem": "Web Browser",
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        },
-        "featureList": [
-          "AI-powered conversations",
-          "Instant grammar feedback",
-          "Vocabulary tracking",
-          "Progress analytics",
-          "Multiple language support",
-          "Voice input support"
-        ]
-      }
-    </script>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
+

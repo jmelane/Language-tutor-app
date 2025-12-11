@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "LangTutor",
+  "name": "Language Tutor - AI Language Learning",
+  "description": "AI-powered language learning assistant. Practice conversations, get instant feedback, and master new languages.",
   "icons": [
     {
       "src": "favicon.ico",
@@ -10,16 +11,39 @@
     {
       "src": "logo192.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "192x192",
+      "purpose": "any maskable"
     },
     {
       "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "orientation": "portrait-primary",
+  "theme_color": "#7c3aed",
+  "background_color": "#0f0a1f",
+  "categories": ["education", "productivity"],
+  "lang": "en",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Practice Spanish",
+      "short_name": "Spanish",
+      "description": "Start practicing Spanish",
+      "url": "/?lang=spanish",
+      "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Practice French",
+      "short_name": "French",
+      "description": "Start practicing French",
+      "url": "/?lang=french",
+      "icons": [{ "src": "logo192.png", "sizes": "192x192" }]
+    }
+  ]
 }

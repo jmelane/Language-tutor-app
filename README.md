@@ -1,70 +1,223 @@
-# Getting Started with Create React App
+# 🌍 Language Tutor App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+An AI-powered language learning application with real-time feedback, progress tracking, and conversation persistence.
 
-## Available Scripts
+![Languages](https://img.shields.io/badge/languages-8-blue)
+![React](https://img.shields.io/badge/react-18+-blue)
+![Tailwind](https://img.shields.io/badge/tailwind-3-blue)
 
-In the project directory, you can run:
+## ✨ Features
 
-### `npm start`
+- 🗣️ **8 Languages**: Spanish, French, German, Japanese, Italian, Portuguese, Chinese, Korean
+- 🤖 **AI-Powered**: Get intelligent feedback from GPT-4 or Claude
+- 📊 **Progress Tracking**: Monitor vocabulary, grammar, and conversation skills
+- 💾 **Auto-Save**: All conversations and progress saved automatically
+- 🎯 **Learning Goals**: Set and track personalized objectives
+- 🔄 **Dual Modes**: Chat mode for conversation, Lesson mode for structured learning
+- 🌐 **Translation**: Click messages to see English translations
+- 📥 **Export Data**: Backup your learning progress
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## 🚀 Quick Start
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Prerequisites
+- Node.js 14+ installed
+- An API key from OpenAI or Anthropic
 
-### `npm test`
+### Installation
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+The app is already set up! If starting from scratch:
 
-### `npm run build`
+```bash
+npm install
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Configuration
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+**⚠️ IMPORTANT: Add your API key before using!**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+1. Open `src/config.js`
+2. Add your API key:
+   ```javascript
+   openai: {
+     apiKey: 'sk-your-key-here', // Replace this!
+   }
+   ```
+3. Save the file
 
-### `npm run eject`
+📖 **Full setup guide**: [QUICK_START.md](./QUICK_START.md)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Run the App
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+npm start
+```
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Opens at http://localhost:3000
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 📖 Documentation
 
-## Learn More
+- **[QUICK_START.md](./QUICK_START.md)** - Get started in 3 minutes
+- **[API_SETUP_GUIDE.md](./API_SETUP_GUIDE.md)** - Complete API configuration guide
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🎯 How to Use
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Basic Usage
 
-### Code Splitting
+1. **Select Language**: Choose from 8 languages
+2. **Start Chatting**: Type in your target language
+3. **Get Feedback**: Receive instant corrections and suggestions
+4. **Track Progress**: Watch your vocabulary and accuracy improve
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### Advanced Features
 
-### Analyzing the Bundle Size
+**Lesson Mode**: Click the mode button for structured lessons
+**Translations**: Click tutor messages to see English translation
+**Goals**: Add custom learning goals with the + Add button
+**Export**: Download your progress with Export Backup
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 🔧 Configuration
 
-### Making a Progressive Web App
+### API Providers
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Edit `src/config.js` to choose your provider:
 
-### Advanced Configuration
+```javascript
+provider: 'openai',  // or 'anthropic' or 'custom'
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### Storage Settings
 
-### Deployment
+Enable/disable auto-save:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```javascript
+STORAGE_CONFIG: {
+  enablePersistence: true, // Set false to disable saving
+}
+```
 
-### `npm run build` fails to minify
+## 📊 What Gets Saved
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Your browser automatically saves:
+- ✅ Conversations (per language)
+- ✅ User profile and proficiency level
+- ✅ Learning goals and progress
+- ✅ Vocabulary statistics
+- ✅ Grammar accuracy history
+
+**Privacy**: All data stays on your device (localStorage)
+
+## 🏗️ Project Structure
+
+```
+src/
+├── App.js                    # Main app entry
+├── LanguageTutorApp.jsx      # Main component
+├── config.js                 # API and storage configuration
+├── apiService.js             # AI provider integration
+├── storageService.js         # localStorage management
+├── index.css                 # Tailwind imports
+└── ...
+```
+
+## 🎨 Customization
+
+### Add New Languages
+
+Edit `LanguageTutorApp.jsx`:
+
+```javascript
+const languages = {
+  yourLanguage: { name: 'Your Language', flag: '🏁' },
+  // ... existing languages
+};
+```
+
+### Change UI Colors
+
+Update Tailwind classes in `LanguageTutorApp.jsx`
+
+### Modify Learning Goals
+
+Edit the `generateLearningGoals` function
+
+## 🐛 Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| "API key not configured" | Add your key in `src/config.js` |
+| Slow responses | Switch to gpt-3.5-turbo in config |
+| Data not saving | Check browser doesn't block localStorage |
+| Port 3000 in use | Kill the process: `lsof -ti:3000 \| xargs kill -9` |
+
+See [API_SETUP_GUIDE.md](./API_SETUP_GUIDE.md) for more help.
+
+## 💰 API Costs
+
+Approximate costs per conversation:
+
+| Model | Cost per Chat | 100 Chats |
+|-------|--------------|-----------|
+| GPT-3.5-turbo | $0.002 | $0.20 |
+| GPT-4 | $0.06 | $6.00 |
+| Claude Sonnet | $0.015 | $1.50 |
+
+**Tip**: Start with GPT-3.5-turbo for learning!
+
+## 🔒 Security
+
+**⚠️ Never commit API keys to version control!**
+
+For production:
+1. Use environment variables
+2. Add `.env` to `.gitignore`
+3. Use backend proxy for API calls
+
+## 📱 Browser Compatibility
+
+- ✅ Chrome/Edge (recommended)
+- ✅ Firefox
+- ✅ Safari
+- ⚠️ IE11 not supported
+
+## 🤝 Contributing
+
+This is a personal learning project. Feel free to fork and customize!
+
+## 📝 License
+
+MIT License - Use freely for learning!
+
+## 🙏 Credits
+
+Built with:
+- React
+- Tailwind CSS
+- Lucide React Icons
+- OpenAI/Anthropic APIs
+
+---
+
+## 🎓 Learning Tips
+
+### For Beginners
+1. Start with greetings and simple phrases
+2. Use Chat Mode for natural conversation
+3. Don't worry about mistakes - practice is key!
+
+### For Intermediate
+1. Switch to Lesson Mode for grammar focus
+2. Set specific vocabulary goals
+3. Try to use complex sentence structures
+
+### For Advanced
+1. Have longer conversations
+2. Focus on cultural expressions
+3. Ask the AI about nuances and idioms
+
+---
+
+**Ready to start learning? Follow the [QUICK_START.md](./QUICK_START.md) guide!**
+
+Need help? Check [API_SETUP_GUIDE.md](./API_SETUP_GUIDE.md) for detailed instructions.
+
+**Happy learning! 🎉🌍**
